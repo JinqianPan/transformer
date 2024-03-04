@@ -20,7 +20,7 @@ Encoders and decoders are stacked by multiple encoders and decoders of the same 
 
 `Each encoder` has `same structure`, but they `do not share weights`. (Same as decoders)
 
-### More details
+### Processing
 
 <p align="center">
   <img src="./img/004.png" width="300">
