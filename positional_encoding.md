@@ -57,7 +57,8 @@ $$PS(pos, 2i+1) = \cos (\frac{1}{1000^{\frac{2i}{d_{model}}}} \cdot pos)$$
 where $pos$ is the position, $i$ is the dimension, and $d_{model} = 512$.
 
 将公式给拆开，我们就会得到：
-$$PE(pos) = \left[
+```math
+PE(pos) = \left[
 \begin{array}{c}
 \sin(\omega_0 \cdot pos) \\
 \cos(\omega_0 \cdot pos) \\
@@ -86,5 +87,6 @@ $$PE(pos) = \left[
 \sin(9646.61612 \cdot pos) \\
 \cos(9646.61612 \cdot pos) \\
 \end{array}
-\right]_{d_{\text{model}} \times 1}$$
+\right]_{d_{\text{model}} \times 1}
+```
 
