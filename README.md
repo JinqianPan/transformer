@@ -39,6 +39,12 @@ In the transformer, the the input part is **input embedding (word embedding)** a
 
 2. Positional encoding: Since there are **no loops or convolutional structures** in Transformer, in order to **enable the model to take advantage of the sequence**, authors insert some information about the **relative or absolute position** of tokens in the **sequence**.[4]
 
+<p align="center">
+  <img src="./img/007.png" width="700">
+</p>
+
+#### Encoder side
+
 
 ## Coding
 
