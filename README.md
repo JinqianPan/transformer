@@ -37,12 +37,14 @@ In the transformer, the the input part is **input embedding (word embedding)** a
   <img src="./img/006.png" width="300">
 </p>
 
-2. Positional encoding: 
+2. Positional encoding: Since there are **no loops or convolutional structures** in Transformer, in order to **enable the model to take advantage of the sequence**, authors insert some information about the **relative or absolute position** of tokens in the **sequence**.[4]
+
 
 ## Coding
 
 ## Reference:
-1. Attention Is All You Need: https://arxiv.org/abs/1706.03762
-2. The Illustrated Transformer: https://jalammar.github.io/illustrated-transformer/
-3. Transformer模型详解（图解最完整版）: https://zhuanlan.zhihu.com/p/338817680
+1. [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+2. [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/)
+3. [Transformer模型详解（图解最完整版）](https://zhuanlan.zhihu.com/p/338817680)
+4. [详解Transformer中的Positional Encoding](https://blog.csdn.net/qq_40744423/article/details/121930739#:~:text=%2Dpositional%2Dencoding%2F-,%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89Positional%20Encoding%EF%BC%9F,Encoding%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E2%80%9D%E7%9A%84%E6%A6%82%E5%BF%B5%E3%80%82)
 
