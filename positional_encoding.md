@@ -1,16 +1,16 @@
 # Transformer中的Positional Encoding
-这篇 Readme 在 [原文](https://blog.csdn.net/qq_40744423/article/details/121930739#:~:text=%2Dpositional%2Dencoding%2F-,%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89Positional%20Encoding%EF%BC%9F,Encoding%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E2%80%9D%E7%9A%84%E6%A6%82%E5%BF%B5%E3%80%82) 的基础上加入了我自己的理解。
-[Transformer学习笔记一：Positional Encoding（位置编码）](https://zhuanlan.zhihu.com/p/454482273)
+这篇笔记1️以 [详解Transformer中的Positional Encoding](https://blog.csdn.net/qq_40744423/article/details/121930739#:~:text=%2Dpositional%2Dencoding%2F-,%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89Positional%20Encoding%EF%BC%9F,Encoding%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E2%80%9D%E7%9A%84%E6%A6%82%E5%BF%B5%E3%80%82) 和 [Transformer学习笔记一：Positional Encoding（位置编码）](https://zhuanlan.zhihu.com/p/454482273) 为基础。
 
-## 为什么要有Positional Encoding？
-由于Transformer中`没有循环以及卷积结构`，为了让模型能够利用`时序`，作者们插入了一些关于 tokens 在序列中相对或绝对位置的信息。因此，作者们提出了“Positional Encoding位置编码”的概念。
+## 什么是 Positional Encoding
+Positional Encoding 为`没有循环以及卷积结构`的 transformer 提供 self-attention 能够利用`位置信息`。
 
-Positional encoding 和 words embedding 具有`同样的维度`，positional encoding 和 words embedding 可以直接相加，结果作为 Encoder 和 Decoder 的底部输入。
+> [!NOTE]
+> Positional encoding 和 input embedding 具有`同样的维度`，这样使得 positional encoding 和 input embedding 可以直接相加，结果作为 Encoder 和 Decoder 的底部输入。
 
-## 怎么定义Positional Encoding呢？
-这一部分，[原文](https://blog.csdn.net/qq_40744423/article/details/121930739#:~:text=%2Dpositional%2Dencoding%2F-,%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89Positional%20Encoding%EF%BC%9F,Encoding%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E2%80%9D%E7%9A%84%E6%A6%82%E5%BF%B5%E3%80%82) 给出了几种可以使用的 positional encoding，并且给出了他们的优缺点，从而解释为什么论文中作者会给出三角函数型的 positional encoding 公式。
+## 怎么定义Positional Encoding呢
+这一部分，两篇文章给出了几种可以使用的 positional encoding，并且给出了他们的优缺点，从而解释为什么论文中作者会给出三角函数型的 positional encoding 公式。
 
-### 方式1: 表格型--直接编号
+### 方式1: 单调递增--直接编号
 Assume 给定一个长度为 $T$ 的序列，token在序列中的位置记作 $pos$，那么 token 的位置编码
 $$PE = pos = 0, 1, 2, \dots, T-1$$
 
@@ -21,7 +21,7 @@ $$PE = pos = 0, 1, 2, \dots, T-1$$
 >
 > 那么，`这就需要位置编码最好有一定的取值范围`。
 
-### 方式2：表格型--对每个位置 $pos$ 作归一化
+### 方式2: 单调递增进阶--对每个位置 $pos$ 作归一化
 $$PE = \frac{pos}{T-1}, pos \in \{0, 1, 2, \dots, T-1 \}$$
 
 这样使得所有位置编码都落入区间 $[ 0, 1 ]$，但是问题也是显著的：
@@ -33,10 +33,22 @@ $$PE = \frac{pos}{T-1}, pos \in \{0, 1, 2, \dots, T-1 \}$$
 > 所以，position encoding 的定义要满足下列需求：
 > 1. 每个位置有一个唯一的 positional encoding；
 > 2. 最好具有一定的值域范围；
-> 3. 需要体现一定的相对次序关系，并且在一定范围内的编码差异不应该依赖于文本长度，具有一定 translation invariant 平移不变性。
+> 3. 在序列长度不同的情况下，不同序列中token的相对位置/距离也要保持一致
 
-### 方式3: 函数型
-一种思路是使用**有界的周期性函数**。
+### 方式3: 将单一维度的位置信息扩展到多维度
+考虑到位置信息作用在input embedding上，因此比起用单一的值，更好的方案是用一个和 input embedding 维度一样的向量来表示位置。
+这时我们就很容易想到二进制编码。如下图，假设d_model = 3，那么我们的位置向量可以表示成：
+
+<p align="center">
+  <img src="./img/009.png" width="700">
+</p>
+
+这下所有的值都是有界的（位于0，1之间），且 transformer 中的 $d_{model}$ 本来就足够大，基本可以把我们要的每一个位置都编码出来了。
+
+> [!IMPORTANT]
+> 但是这种编码方式也存在问题：这样编码出来的位置向量，处在一个离散的空间中，不同位置间的变化是不连续的。
+
+### 方式4: 在多维度的基础上使用有界的周期性函数
 在前面的两种方法中，我们为了体现某个字在句子中的绝对位置，使用了一个单调的函数，使得任意后续的字符的位置编码都大于前面的字。
 如果我们放弃对绝对位置的追求，转而要求位置编码仅仅关注一定范围内的相对次序关系，那么使用一个sin/cos函数就是很好的选择，因为sin/cos函数的周期变化规律非常稳定，所以编码具有一定的平移不变性。
 
