@@ -84,10 +84,34 @@ PE(pos) = \left[
 \sin(pos) \\
 \cos(pos) \\
 \vdots \\
-\sin(9646.61612 \cdot pos) \\
-\cos(9646.61612 \cdot pos) \\
+\sin(0.0010 \cdot pos) \\
+\cos(0.0010 \cdot pos) \\
 \end{array}
 \right]_{d_{\text{model}} \times 1}
 ```
 
 不过这样定义positional encoding，仍会陷入循环, 这里人为地将最大不重复序列长度限制为 512。例如，在 BERT 中就是这样做的（尽管值得一提的是他们使用了学习位置嵌入，但那是另一回事了）。 如果不这样做，模型确实无法区分序列中的第一个token和第513个token的位置编码。
+
+## Coding
+```Python
+import numpy as np
+import seaborn as sns
+
+PE = np.zeros([512, 512])
+d_model = 512
+
+for pos in range(d_model):
+    for i in range(int(d_model / 2)):
+        PE[pos][2 * i] = np.sin(pos / (1000 ** (2 * 2 * i / d_model)))
+        PE[pos][2 * i + 1] = np.cos(pos / (1000 ** (2*(2 * i + 1) / d_model)))
+
+sns.heatmap(data=PE,vmin=-1,vmax=1)
+```
+
+<p align="center">
+  <img src="./img/008.png" width="700">
+</p>
+
+可以发现，由于sin/cos函数的性质，位置向量的每一个值都位于 $[-1, 1]$ 之间。
+同时，纵向来看，图的右半边几乎都是红色的，这是因为越往后的位置，频率越小，波长越长，所以不同的t对最终的结果影响不大。
+而越往左边走，颜色交替的频率越频繁。
