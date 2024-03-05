@@ -73,25 +73,51 @@ PE(pos) = \left[
 通过频率 $\frac{1}{2^i}$ 来控制 $sin$ 函数的波长，频率不断减小，则波长不断变大，此时 $sin$ 函数对 $t$ 的变动越不敏感，以此来达到越向右的旋钮，指针移动步伐越小的目的。 这也类似于二进制编码，每一位上都是0和1的交互，越往低位走（越往左边走），交互的频率越慢。
 
 <p align="center">
-  <img src="./img/010.png" width="300">
+  <img src="./img/010.png" width="302">
   <img src="./img/011.png" width="106">
 </p>
 
-在前面的两种方法中，我们为了体现某个字在句子中的绝对位置，使用了一个单调的函数，使得任意后续的字符的位置编码都大于前面的字。
-如果我们放弃对绝对位置的追求，转而要求位置编码仅仅关注一定范围内的相对次序关系，那么使用一个sin/cos函数就是很好的选择，因为sin/cos函数的周期变化规律非常稳定，所以编码具有一定的平移不变性。
-
-$$PE(pos) = \sin(\omega \cdot pos)$$
-
-其中，$\omega$ 越小，波长越长，即相邻的 token 的位置编码之间的差异越小。
+其中， $\omega$ 越小，波长越长，即相邻的 token 的位置编码之间的差异越小。
 
 > [!IMPORTANT]
 > 但这样也存在一些问题：
 > 1. 如果 $\omega$ 比较大，相邻 token 之间的位置差异不明显；
 > 2. 如果 $\omega$ 比较小，在长序列中可能会有一些不同位置的token的位置编码一样，这是因为PE的值域 $[-1, 1]$ 的表现范围有限。
 
-## 论文的选择
-所以作者并没有使用单一维度的三角函数，而是将维度拓展到 512维。使用512的理由是 word embedding 的维度是 512，这样方便让 positional embedding 和 word embeeding 的结果相加。
+所以，作者将 $\omega$ 定义为 $\omega = \frac{1}{1000^{\frac{i}{d_{modal}-1}}}$
 
+### (5) 用sin和cos交替来表示位置
+目前为止，我们的位置向量实现了如下功能：
+1. 每个 token 的向量唯一（每个sin函数的频率足够小）
+2. 位置向量的值是有界的，且位于连续空间中。模型在处理位置向量时更容易泛化，即更好处理长度和训练数据分布不一致的序列（sin函数本身的性质）
+
+那现在我们对位置向量再提出一个要求: **不同的位置向量是可以通过线性转换得到的**。
+这样，我们不仅能表示一个token的绝对位置，还可以表示一个 token 的相对位置，即我们想要：
+$$PE_{t + \Delta t} = T_{\Delta t} \cdot PE_t $$
+
+这里，$T$ 表示一个线性变换矩阵。观察这个目标式子，联想到在向量空间中一种常用的线形变换——旋转。在这里，我们将t想象为一个角度，那么就是其旋转的角度，则上面的式子可以进一步写成：
+
+```math
+\begin{equation}
+\begin{pmatrix}
+\sin(t + \Delta t) \\
+\cos(t + \Delta t)
+\end{pmatrix}
+=
+\begin{pmatrix}
+\cos \Delta t & \sin \Delta t \\
+-\sin \Delta t & \cos \Delta t
+\end{pmatrix}
+\begin{pmatrix}
+\sin t \\
+\cos t
+\end{pmatrix}
+\end{equation}
+```
+
+***
+
+## 论文的选择
 $$PS(pos, 2i) = \sin (\frac{1}{1000^{\frac{2i}{d_{model}}}} \cdot pos)$$
 $$PS(pos, 2i+1) = \cos (\frac{1}{1000^{\frac{2i}{d_{model}}}} \cdot pos)$$
 
