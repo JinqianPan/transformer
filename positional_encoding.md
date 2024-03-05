@@ -61,8 +61,8 @@ PE(pos) = \left[
 \sin(\omega_2 \cdot pos) \\
 \sin(\omega_3 \cdot pos) \\
 \vdots \\
-\sin(\omega_4 \cdot pos ) \\
-\sin(\omega_5 \cdot pos ) \\
+\sin(\omega_{d_{model}-1} \cdot pos ) \\
+\sin(\omega_{d_{model}} \cdot pos ) \\
 \end{array}
 \right]_{d_{model} \times 1}
 ```
@@ -115,9 +115,7 @@ $$PE_{t + \Delta t} = T_{\Delta t} \cdot PE_t $$
 \end{equation}
 ```
 
-***
-
-## 论文的选择
+有了这个构想，我们就可以把原来元素全都是sin函数的做一个替换，我们让位置两两一组，分别用sin和cos的函数对来表示它们，则现在我们有：
 $$PS(pos, 2i) = \sin (\frac{1}{1000^{\frac{2i}{d_{model}}}} \cdot pos)$$
 $$PS(pos, 2i+1) = \cos (\frac{1}{1000^{\frac{2i}{d_{model}}}} \cdot pos)$$
 
