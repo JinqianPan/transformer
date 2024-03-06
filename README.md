@@ -2,42 +2,42 @@ Edit by `Mar. 3, 2024`
 
 # Transformer
 
-## Theoretical knowledge
+## 一些小小的理论知识
 > A transformer is a deep learning architecture based on the multi-head attention mechanism, proposed in a 2017 paper ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762). -- Wiki
 
 ### High level review
-The transformer could be regarded as a `black box` in high level. This black box is composed by `Encoders` and `Decoders`.
+从 high level 层面上来看，transformer其实就是一个 `black box`。而这个黑匣子由 `Encoders` 和 `Decoders` 两个部分组成。
 
 <p align="center">
   <img src="./img/001.png" width="700">
 </p>
 
-Encoders and decoders are stacked by multiple encoders and decoders of the same number. The simple transformer seems to use 6 encoders and decoders.
+`Encoders` 和 `Decoders` 其实是由多个个数相同的 encoders 和 decoders 组成的。论文里使用了6个，但这是超参，可以进行调试。
 
 <p align="center">
   <img src="./img/003.png" width="700">
 </p>
 
-`Each encoder` has `same structure`, but they `do not share weights`. (Same as decoders)
+每一个 encoder 都有`相同的结构`，但他们`不 share weights`。Decoders 也一样。
 
-### Processing
+### 过程
 
 <p align="center">
   <img src="./img/004.png" width="300">
 </p>
 
-#### Input part
-In the transformer, the the input part is **input embedding (word embedding)** and **positional encoding**.
-1. Input embedding: usually input embedding have two chooses, one-hot encoding and word embedding. Its essence is to make input into a set of numbers.
+#### Input
+在 transformer中，如上图所示，有两个 input part。而这两个 input part 由 **input embedding (word embedding)** 和 **positional encoding** 组成。
+1. Input embedding: 比较常见的input embedding 有 One-hot encoding 和 Word embedding 两种。Input embedding 的本质是将输入输入成一组数字。
     * One-hot encoding
-    * Word embedding generates *similar positional positioning of semantically similar and related words* in the Embedding space.
+    * Word embedding 在嵌入空间中生成**语义上相似 和 相关单词的类似位置**。
 
 <p align="center">
   <img src="./img/005.png" width="300">
   <img src="./img/006.png" width="300">
 </p>
 
-2. Positional encoding: Since there are **no loops or convolutional structures** in Transformer, in order to **enable the model to take advantage of the sequence**, authors insert some information about the **relative or absolute position** of tokens in the **sequence**.[4]
+2. Positional encoding 为`没有循环以及卷积结构`的 transformer 提供 self-attention 能够利用`位置信息`。(详见[positional_encoding.md](positional_encoding.md))
 
 <p align="center">
   <img src="./img/007.png" width="700">
