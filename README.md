@@ -43,8 +43,25 @@ Edit by `Mar. 3, 2024`
   <img src="./img/007.png" width="700">
 </p>
 
-#### Encoder side
+#### Encoders and Decoders
+1. 在 embedding 之后，数据过了 encoders 之后，会将 Encoders 输出的结果输入到每一个 Decoder 中。
+2. 这里循环的部分就来了：Decoders 也有一个输入部分，而这个部分是上一次的结果。比如输入是 “我有一只猫”，那么每一次的 decoders 的输入就是 “开始符号“， ”开始符号 + I“， ”开始符号 + I + have“ + ...
+3. Decoders 的输出部分还会通过一个 Linear layer 和一个 softmax layer。
 
+<p align="center">
+  <img src="./img/013.png" width="200">
+  <img src="./img/014.png" width="475">
+</p>
+
+其实 encoder block 和 decoder block 长得差不多。 Decoder block 比 encoder block 多的部分是一个 masked multi-head attention。
+
+<p align="center">
+  <img src="./img/015.png" width="700">
+</p>
+
+self-attention
+
+***
 
 ## Coding
 
